@@ -2,25 +2,33 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+[RequireComponent(typeof(Rigidbody2D))]
 public class Movement : MonoBehaviour
 {
+    private new Rigidbody2D rigidbody;
     public float speed;
-    private Rigidbody2D rigidbody;
 
     // Start is called before the first frame update
     void Start()
     {
         rigidbody = GetComponent<Rigidbody2D>();
+        rigidbody.freezeRotation = true;
     }
 
     // Update is called once per frame
-    void Update()
+    void FixedUpdate()
     {
-        float moveHorizontal = Input.GetAxis("Horizontal");
-        float moveVertical = Input.GetAxis("Vertical");
+        if (rigidbody != null)
+        {
+            float xInput = Input.GetAxis("Horizontal");
+            float xForce = xInput * speed * Time.deltaTime;
+            Vector2 force = new Vector2(xForce, 0);
 
-        Vector2 movement = new Vector2(moveHorizontal, moveVertical);
-
-        rigidbody.AddForce(movement * speed);
+            rigidbody.AddForce(force);
+        }
+        else
+        {
+            Debug.LogWarning("Rigid body not attached to the GameObject " + gameObject.name);
+        }
     }
 }
